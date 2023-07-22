@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { SignUpForm } from "../components/Form";
 import { signUp } from "../apis/api";
+import { Link } from "react-router-dom";
 
 const SignUpPage = () => {
   const [formData, setFormData] = useState({
@@ -18,13 +19,17 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center w-1/2">
-      <h3 className=" font-bold text-4xl">Sign Up</h3>
-      <SignUpForm
-        formData={formData}
-        setFormData={setFormData}
-        handleSignUpSubmit={handleSignUpSubmit}
-      />
+    <div>
+      <div className="flex flex-col items-center my-[100px]">
+        <h3 className="font-bold text-4xl font-sans uppercase">
+          Easy Sign Up<br></br>
+        </h3>
+        <SignUpForm
+          formData={formData}
+          setFormData={setFormData}
+          handleSignUpSubmit={handleSignUpSubmit}
+        />
+      </div>
     </div>
   );
 };

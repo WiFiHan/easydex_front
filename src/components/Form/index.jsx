@@ -1,5 +1,8 @@
 import { useState } from "react";
 import MyPageElement from "./MyPageElement";
+import email_icon from "../../assets/images/email_icon.png";
+import person_icon from "../../assets/images/person_icon.png";
+import lock_icon from "../../assets/images/lock_icon.png";
 
 export const SignUpForm = ({ formData, setFormData, handleSignUpSubmit }) => {
   const handleFormData = (e) => {
@@ -9,57 +12,63 @@ export const SignUpForm = ({ formData, setFormData, handleSignUpSubmit }) => {
 
   return (
     <form className="form" onSubmit={handleSignUpSubmit}>
-      <label htmlFor="email" className="label">
-        *email:
-      </label>
-      <input
-        required
-        type="email"
-        id="email"
-        className="input"
-        onChange={handleFormData}
-        value={formData.email}
-      />
+      <div className="flex items-center justify-between card h-[400px] w-[500px] bg-base-100 shadow-xl m-[30px] p-[30px]">
+        <div className="flex flex-row justify-between items-center">
+          <img src={email_icon} className="h-[50px] w-[50px]" />
+          <input
+            required
+            type="email"
+            id="email"
+            className="input input-bordered w-[440px] ml-[10px]"
+            onChange={handleFormData}
+            placeholder="email@example.com"
+            value={formData.email}
+          />
+        </div>
+        <div className="flex flex-row justify-between items-center">
+          <img src={lock_icon} className="h-[50px] w-[50px]" />
 
-      <label htmlFor="password" className="label">
-        *password:
-      </label>
-      <input
-        required
-        type="password"
-        id="password"
-        className="input"
-        onChange={handleFormData}
-        value={formData.password}
-      />
+          <input
+            required
+            type="password"
+            id="password"
+            className="input input-bordered w-[440px] ml-[10px]"
+            onChange={handleFormData}
+            placeholder="비밀번호를 입력해주세요"
+            value={formData.password}
+          />
+        </div>
+        <div className="flex flex-row justify-between items-center">
+          <img src={lock_icon} className="h-[50px] w-[50px]" />
 
-      <label htmlFor="confirm_password" className="label">
-        *password 확인:{" "}
-      </label>
-      <input
-        required
-        type="password"
-        id="confirm_password"
-        className="input"
-        onChange={handleFormData}
-        value={formData.confirm_password}
-      />
+          <input
+            required
+            type="password"
+            id="confirm_password"
+            className="input input-bordered w-[440px] ml-[10px]"
+            onChange={handleFormData}
+            placeholder="비밀번호를 다시 입력해주세요"
+            value={formData.confirm_password}
+          />
+        </div>
+        <div className="flex flex-row justify-between items-center">
+          <img src={person_icon} className="h-[50px] w-[50px]" />
 
-      <label required htmlFor="name" className="label">
-        *이름:
-      </label>
-      <input
-        required
-        type="text"
-        id="username"
-        className="input"
-        onChange={handleFormData}
-        value={formData.username}
-      />
+          <input
+            required
+            type="text"
+            id="username"
+            className="input input-bordered w-[440px] ml-[10px]"
+            onChange={handleFormData}
+            placeholder="이름을 입력해주세요"
+            value={formData.username}
+          />
+        </div>
 
-      <button type="submit" className="button mt-7">
-        Sign up !
-      </button>
+        <button type="submit" className="btn btn-lg btn-wide mt-7 font-sans">
+          회원가입
+        </button>
+      </div>
     </form>
   );
 };
@@ -79,26 +88,28 @@ export const SignInForm = ({ formData, setFormData, handleSignInSubmit }) => {
             경제 관련 소식을 받아보세요.
           </p>
         </div>
-
-        <input
-          required
-          type="text"
-          id="username"
-          className="input input-bordered w-full"
-          onChange={handleFormData}
-          value={formData.username}
-          placeholder="이메일 또는 전화"
-        />
-
-        <input
-          required
-          type="password"
-          id="password"
-          className="input input-bordered w-full"
-          onChange={handleFormData}
-          value={formData.password}
-          placeholder="비밀번호"
-        />
+        <div>
+          <input
+            required
+            type="text"
+            id="username"
+            className="input input-bordered w-full"
+            onChange={handleFormData}
+            value={formData.username}
+            placeholder="이메일 또는 전화"
+          />
+        </div>
+        <div>
+          <input
+            required
+            type="password"
+            id="password"
+            className="input input-bordered w-full"
+            onChange={handleFormData}
+            value={formData.password}
+            placeholder="비밀번호"
+          />
+        </div>
         <button type="submit" className="btn btn-lg btn-wide mt-7 font-sans ">
           로그인
         </button>
