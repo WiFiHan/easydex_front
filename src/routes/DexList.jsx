@@ -1,12 +1,20 @@
 import { useState } from "react";
 import { DexBlock } from "../components/DexBlock";
-import dexList from "../data/dex";
+import useDexList from "../data/dex";
 import { BigBlock,SmallBlock } from "../components/Block/index";
 import { Tag } from "../components/Block/tag";
 import { Link } from "react-router-dom";
+import { getSessionStorage } from "../utils/cookie";
+import { watchDex } from "../apis/api";
 
 const DexListPage = () => {
-  //const [dexes, setPostList] = useState(dexList);
+  // const dexList = useDexList();
+  // const { dexList, watchDexList } = useDexList();
+  const dexList = getSessionStorage('cachedDexList');
+  dexList.map((dex) => (
+    console.log(dex.tags)
+    ))
+  // console.log(`DexList is ${dexList}`);
 
   const handleChange = (e) => {};
 
@@ -70,6 +78,14 @@ export default DexListPage;
 const DexInfo = ({dex}) =>{
 // 순서  1. id, 2. title, 3. closing, 4. tags
 // 3번째 td에 5000을 추후 dex.closing으로 수정
+
+
+const onClickWatch = () => {
+  watchDex(dex.id);
+};
+
+
+
 return (<>
   <tr class="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600">
   <td class="whitespace-nowrap px-6 py-4 font-medium">{dex.id}</td> 
@@ -79,6 +95,11 @@ return (<>
       state={{ istag: false }}>
       {dex.title}
     </Link>
+
+    <button className="btn btn-xs" onClick={onClickWatch}>
+              ❤️
+    </button>
+
   </td>
   <td class="whitespace-nowrap px-6 py-4">5000</td>
   <td class="whitespace-nowrap px-6 py-4 flex flex-row">

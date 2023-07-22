@@ -37,6 +37,7 @@ const Header = () => {
           </p>
           <p className="font-sans ml-5 text-4xl tracking-widest">EasyDEX</p>
         </div>
+
         <div className="flex-none">
           <div className="flex">
             {!isUser ? (
@@ -45,6 +46,7 @@ const Header = () => {
                   sign In
                 </Link>
                 <Link to="/signup" className="btn btn-ghost p-3 uppercase">
+
                   sign up
                 </Link>
               </>
@@ -54,6 +56,7 @@ const Header = () => {
                   my page
                 </Link>
                 <Link to="/" onClick={handleLogout} className="p-3 uppercase">
+
                   log out
                 </Link>
               </>

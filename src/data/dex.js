@@ -1,68 +1,60 @@
-const dexList = [
-  {
-    id: 1,
-    invest: false,
-    title: "interest",
-    values: {
-      1: 0.056,
-      2: 0.135,
-    },
-    time: "2023-02-04T07:42:50.658501Z",
-    description: "short description",
-    tags: [1, 2, 3, 4, 5],
-  },
-  {
-    id: 2,
-    invest: true,
-    title: "kospi",
-    values: {
-      1: 1400,
-      2: 2000,
-      3: 2100,
-    },
-    time: "2023-02-04T07:42:50.658501Z",
-    description: "short description",
-    tags: [1, 2],
-  },
-  {
-    id: 3,
-    invest: true,
-    title: "kospi3",
-    values: {
-      1: 1400,
-      2: 2000,
-      3: 2100,
-    },
-    time: "2023-02-04T07:42:50.658501Z",
-    description: "short description",
-    tags: [1, 2],
-  },
-  {
-    id: 4,
-    invest: true,
-    title: "kospi4",
-    values: {
-      1: 1400,
-      2: 2000,
-      3: 2100,
-    },
-    time: "2023-02-04T07:42:50.658501Z",
-    description: "short description",
-    tags: [1, 2, 5],
-  },
-  {
-    id: 5,
-    invest: true,
-    title: "kospi5",
-    values: {
-      1: 1400,
-      2: 2000,
-      3: 2100,
-    },
-    time: "2023-02-04T07:42:50.658501Z",
-    description: "short description",
-    tags: [1, 2, 3],
-  },
-];
+import { useEffect, useState } from 'react';
+import { getDexes, pullDexes, getUser } from '../apis/api';
+import { getCookie, setSessionStorage, getSessionStorage } from '../utils/cookie';
 
-export default dexList;
+const useDexList = () => {
+  const [cachedDexList, setCachedDexList] = useState([]);
+  const [cachedWatchDexList, setCachedWatchDexList] = useState([]);
+  const [isUser, setIsUser] = useState('');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const user = getCookie('access_token') ? true : false;
+        setIsUser(user);
+
+        // 최초 접속 시에는 localStorage에서 dexList를 불러옵니다.
+        const cachedDexes = getSessionStorage('cachedDexList');
+
+        if (cachedDexes) {
+          setCachedDexList(cachedDexes);
+        } else {
+          await pullDexes();
+          const dexes = await getDexes();
+          dexes.map(function(dex) {
+            console.log(dex.tags);
+            if (typeof dex.tags === 'string') {
+              console.log(dex.tags);
+              const jsonTags = JSON.parse(dex.tags.replace(/'/g, '"'));
+              const dexTags = Object.keys(jsonTags)
+                                      .sort((a, b) => jsonTags[b] - jsonTags[a])
+                                      .map(Number);
+              dex.tags = dexTags;        
+            }
+          });
+
+          setCachedDexList(dexes);
+          // 최초로 받아온 dexList를 localStorage에 저장합니다.
+          setSessionStorage('cachedDexList', dexes);
+        }
+
+        if (isUser) {
+          const watchingDex = cachedDexList.filter((dex) => dex.watching_users.includes(user.id) > 0);
+          setCachedWatchDexList(watchingDex);
+        }
+        // setSessionStorage('cachedWatchingDexList', cachedWatchDexList)
+
+        // console.log(cachedDexList);
+
+      } catch (error) {
+        console.error('지표 데이터를 가져오는 도중 오류가 발생했습니다:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  return { dexList: cachedDexList, watchDexList: cachedWatchDexList };
+};
+
+export default useDexList;

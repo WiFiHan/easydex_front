@@ -1,15 +1,18 @@
 import { useState, useEffect } from "react";
 import { DexBlock } from "../components/DexBlock";
-import dexList from "../data/dex";
+import useDexList from "../data/dex";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { BigBlock, SmallBlock } from "../components/Block";
-import { getDexes, pullDexes, getUser, watchDex } from "../apis/api";
-import { getCookie } from "../utils/cookie";
+import { getDexes, pullDexes, getUser } from "../apis/api";
+import { getCookie, getSessionStorage, setSessionStorage } from "../utils/cookie";
 import EasyDEXlogo from "../assets/images/EasyDEX_logo.png";
 
 const HomePage = () => {
-  const [dexes, setDexList] = useState(dexList);
+  
+  //백엔드에 저장되는 데이터로 수정
+  // const dexList = useDexList();
+  const { dexList, watchDexList } = useDexList();
 
   //로그인 여부를 판정하기 위해 사용
   const [isUser, setIsUser] = useState("");
@@ -25,21 +28,20 @@ const HomePage = () => {
   //     const dexes = await getDexes();
   //     setDexList(dexes);
   //     // console.log(dexes);
+  useEffect(() => {
+    const user = getCookie("access_token") ? true : false;
+    setIsUser(user);
+  }, []);
 
+  // //여기서 dexList, watchDexList를 컨트롤중임... 로직 수정 필요
+  // const [watchDex, setWatchList] = useState(getSessionStorage('cachedWatchingDexList'));
+  // console.log(watchDex);
+  // useEffect(() => {
+  //   const watchDexAPI = async () => {
   //     //watchDex: dexes being practically rendered on the Home(Custom)Page
   //     //compare watchDex to the 'dexes', which is the whole list of the dexes saved in the backEnd DB
   //     if (isUser) {
   //       const user = await getUser();
-  //       const watchingDex = dexes.filter(
-  //         (dex) => dex.watching_users.includes(user.id) > 0
-  //       setWatchingDex(watchingDex);
-  //       );
-  //       // console.log(watchingDex);
-  //
-  //     }
-  //   };
-  //   getDexesAPI();
-  // }, []);
 
   const [customDex, setCustomDex] = useState(false);
   const handleCustom = () => {
@@ -47,8 +49,10 @@ const HomePage = () => {
   };
   useEffect(() => {}, [customDex]);
 
+
   const handleChange = (e) => {};
   //className="grid grid-cols-4 px-10 mt-10"
+
   return (
     <div>
       <div className="mainLayout">

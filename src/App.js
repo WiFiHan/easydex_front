@@ -38,6 +38,7 @@ function App() {
 
           {/* <Route path="/create" element={<PostCreatePage />} /> */}
         </Routes>
+        
         <Footer />
       </BrowserRouter>
     </div>
