@@ -102,8 +102,30 @@ import {
 
 
   export function LineChart({dex}) {
-    // const xDatas = Object.keys(dex.value);
-    // const yDatas = Object.values(dex.value);
+
+
+    // const xDatas = Object.keys(dex.values);
+    // const values = Object.values(dex.values);
+    // if (dex.isinvest){
+    //   for(var i = 0; i<values.length;i++){
+    //     values[i] = values[i].replace(',','')*1;
+    //   }
+    // }
+    // else {
+    //   if(xDatas[0].length){
+    //     Chart.defaults.font.size = 10;
+    //   }
+    //   else if(xDatas[0].includes("Q")){
+    //     Chart.defaults.font.size = 8;
+    //   }
+    //   else Chart.defaults.font.size = 8;
+    // }
+
+
+    // const yDatas = values.map(parseFloat);
+    // const valueMinNum = (Math.min(...yDatas)*0.99);
+    // const valueMaxNum = (Math.max(...yDatas)*1.01);
+
     // const data = {
     //   labels : xDatas,
     //   datasets: [
@@ -114,6 +136,26 @@ import {
     //       backgroundColor: 'rgba(255, 99, 132, 0.5)', //마우스 호버시 나타나는 분류네모 표시 bg
     //     },
     //   ],
+    // };
+
+    // const options = {
+    //   responsive: true,
+    //   plugins: {
+    //     legend: {
+    //       position: 'top',
+    //       display: false,
+    //     },
+    //     title: {
+    //       display: false,
+    //       text: 'Chart.js Line Chart',
+    //     },
+    //   },
+    //   scales: {
+    //     y:{
+    //       min: valueMinNum,
+    //       max: valueMaxNum,
+    //     }
+    //   },
     // };
 
     return (
