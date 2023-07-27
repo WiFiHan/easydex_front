@@ -4,24 +4,19 @@ import useDexList from "../data/dex";
 import { BigBlock,SmallBlock } from "../components/Block/index";
 import { Tag } from "../components/Block/tag";
 import { Link } from "react-router-dom";
-import { getSessionStorage, getCookie } from "../utils/cookie";
-import { watchDex, getUser } from "../apis/api";
+import { getSessionStorage, getCookie, setSessionStorage } from "../utils/cookie";
+import { watchDex, getUser, getDex, getDexes } from "../apis/api";
 
 const DexListPage = () => {
   // const dexList = useDexList();
   // const { dexList, watchDexList } = useDexList();
-  const dexList = getSessionStorage('cachedDexList');
+  const [dexList, setDexList] = useState(getSessionStorage('cachedDexList'));
   const [isEdit, setIsEdit] = useState(false);
   const [isUser, setIsUser] = useState("");
   useEffect(() => {
     const user = getCookie("access_token") ? true : false;
     setIsUser(user);
   }, []);
-
-  // dexList.map((dex) => (
-  //   console.log(dex.tags)
-  //   ))
-  // // console.log(`DexList is ${dexList}`);
 
   const handleChange = (e) => {};
 
@@ -68,7 +63,7 @@ const DexListPage = () => {
                     <td class="whitespace-nowrap px-6 py-4">@twitter</td>
                   </tr> */}
                   {dexList.map((dex)=>(
-                    <DexInfo dex={dex} isUser={isUser}/>
+                    <DexInfo dex={dex} dexList={dexList} isUser={isUser}/>
                   ))}
                 </tbody>
               </table>
@@ -82,11 +77,11 @@ const DexListPage = () => {
 
 export default DexListPage;
 
-const DexInfo = ({dex, isUser}) =>{
+const DexInfo = ({dex, dexList, isUser}) =>{
 // 순서  1. id, 2. title, 3. closing, 4. tags
 // 3번째 td에 5000을 추후 dex.closing으로 수정
 
-const onClickWatch = () => {
+const onClickWatch = async () => {
   watchDex(dex.id);
 };
 

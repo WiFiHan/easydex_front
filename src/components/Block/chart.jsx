@@ -69,12 +69,10 @@ import {
       }
     },
   };
-  
-  
 
-  
   //차트 px 단위 기본 폰트 크기 설정
   Chart.defaults.font.size = 10;
+
 
   export const data = {
     labels: xDummy,

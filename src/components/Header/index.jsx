@@ -16,7 +16,6 @@ const Header = () => {
     setIsUser(user);
   }, []);
 
-  console.log(isUser);
 
   const handleLogout = () => {
     const token = getCookie("refresh_token");

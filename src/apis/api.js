@@ -1,4 +1,4 @@
-import { removeCookie } from "../utils/cookie";
+import { getSessionStorage, setSessionStorage, removeCookie } from "../utils/cookie";
 import { instance, instanceWithToken } from "./axios";
 
 // Account API
@@ -92,23 +92,6 @@ export const getDexes = async () => {
   } else {
     console.log("[ERROR] error while getDexes");
   }
-  // //Used this code for Automatically pullDexHistory while getDexes
-  // //But it's computationally expensive, thus I commented out
-
-  // const jsonObject = {
-  //   indices: Object.keys(response.data)
-  //                     .map(key => response.data[key].id)
-  //                     .map(item => String(item))
-  // };
-
-  // //Tags are converted from JSON to Array Here
-  // response.data.map(
-  //   function(data) {      
-  //     pullDexHistory(data.id, jsonObject);
-  //     // async의 영향인지, 여기서 data.tags를 모두 변경하려 하면 페이지에서 렉이 걸린다.
-  //     // const dexTags = Object.keys(JSON.parse(data.tags.replace(/'/g, '"'))).map(Number);
-  //     // data.tags = dexTags;
-  //   });
   return response.data;
 };
 
@@ -159,7 +142,37 @@ export const watchDex = async (dexId) => {
   console.log(response);
 
   if (response.status === 200 || response.status === 201) {
-    // window.location.reload();
+    const user = await getUser();
+    const dexList = getSessionStorage('cachedDexList');
+    // console.log(dexList);
+    // const updateDex = await getDex(dexId);
+    // dexList.forEach(dexItem => {
+    //   if (dexItem.id === dexId) {
+    //     console.log(`before assignment: ${dexItem.watching_users}`);
+    //     dexItem.watching_users = updateDex.watching_users;
+    //     console.log(`after assignment: ${dexItem.watching_users}`);
+    //   }
+    // });
+    // console.log(dexList);
+
+    const dexes = await getDexes();
+    //Front에서 가공할 수 있게 data를 전처리하는 로직
+    dexes.map(function(dex) {
+      if (typeof dex.tags === 'string') {
+        const jsonTags = JSON.parse(dex.tags.replace(/'/g, '"'));
+        const dexTags = Object.keys(jsonTags)
+                                .sort((a, b) => jsonTags[b] - jsonTags[a])
+                                .map(Number);
+        dex.tags = dexTags;        
+      }});
+    // 최초로 받아온 dexList를 localStorage에 저장합니다.
+
+    const watchList = dexes.filter((dex) => dex.watching_users.includes(user.id) > 0);
+    console.log(watchList);
+
+    setSessionStorage('cachedDexList', dexes);
+    setSessionStorage('watchingDex', watchList);
+
   } else {
     console.log("[ERROR] error while deleting post");
   }
