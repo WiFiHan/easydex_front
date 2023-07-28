@@ -105,12 +105,15 @@ ChartJS.register(
 export function LineChart({dex}) {
 
 
-  const xDatas = Object.keys(dex.values);
+  const xDatas = Object.keys(dex.values).reverse();
   const values = Object.values(dex.values);
-  if (dex.isinvest){
+
+  if (dex.isInvest){
     for(var i = 0; i<values.length;i++){
       values[i] = values[i].replace(',','')*1;
+      console.log(values);
     }
+    Chart.defaults.font.size = 10;
   }
   else {
     if(xDatas[0].length){
@@ -123,7 +126,7 @@ export function LineChart({dex}) {
   }
 
 
-  const yDatas = values.map(parseFloat);
+  const yDatas = values.map(parseFloat).reverse();
   const valueMinNum = (Math.min(...yDatas)*0.99);
   const valueMaxNum = (Math.max(...yDatas)*1.01);
 
