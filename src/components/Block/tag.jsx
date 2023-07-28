@@ -13,12 +13,13 @@ export const Tag = ({ id }, { dexid }) => {
 
   const tagid = id;
   const dex = dexList.filter((item) => item.id === id)[0];
+  const showTitle = dex.reduced_title.slice(0, 8) + "...";
 
   return (
     dex && (
       <div className="btn btn-xs btn-outline m-2 uppercase">
         <Link to={"/Bigblock/" + tagid} state={{ istag: true }}>
-          {dex.title}
+          {showTitle}
         </Link>
       </div>
     )

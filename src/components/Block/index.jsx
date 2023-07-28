@@ -2,7 +2,14 @@ import { Link } from "react-router-dom";
 import useDexList from "../../data/dex";
 import { Tag } from "./tag";
 import { useState, useEffect } from "react";
-import { watchDex, getDexes, getDexesAPI, pullDexes, getUser } from "../../apis/api";
+import {
+  watchDex,
+  getDexes,
+  getDex,
+  getDexesAPI,
+  pullDexes,
+  getUser,
+} from "../../apis/api";
 import { getSessionStorage, getCookie } from "../../utils/cookie";
 import { Chart, LineChart } from "./chart";
 import { Line } from "react-chartjs-2";
@@ -25,12 +32,16 @@ const useUser = () => {
 };
 
 // 즐겨찾기 추가 함수
-const addToWatchlist = (dexId) => {
-  console.log(dexId);
-  watchDex(dexId);
+const addToWatchlist = async (dex, user) => {
+  console.log("addToWatchlist");
+  watchDex(dex.id);
+  const updatedDex = await getDex(dex.id);
+  const isWatched = updatedDex.watching_users.includes(user.id) > 0;
+  console.log(isWatched);
 };
 
 export const SmallBlock = ({ dex }) => {
+  const small = false;
   const user = useUser();
   const smallDexTags = dex.tags.slice(0, 2);
 
@@ -45,7 +56,10 @@ export const SmallBlock = ({ dex }) => {
             🙌
           </div>
           {user && (
-            <button className="btn btn-xs btn-ghost" onClick={() => addToWatchlist(dex.id)}>
+            <button
+              className="btn btn-xs btn-ghost"
+              onClick={() => addToWatchlist(dex, user)}
+            >
               ❤️
             </button>
           )}
@@ -58,23 +72,23 @@ export const SmallBlock = ({ dex }) => {
                 state={{ istag: false }}
                 className="btn btn-lg btn-ghost"
               >
-                {dex.title}
+                {dex.reduced_title}
               </Link>
             </div>
-            <p>{dex.closing}</p>
           </div>
-          <div className="flex-col justify-center">
-            {smallDexTags && smallDexTags.length ? (
-              <>
-                {smallDexTags.map((id) => (
-                  <Tag id={id} dexid={dex.id} />
-                ))}
-              </>
-            ) : null}
+          <div className="flex justify-center items-center px-2">
+            <p className="text-lg font-bold">{dex.closing}</p>
           </div>
+          {smallDexTags && smallDexTags.length ? (
+            <>
+              {smallDexTags.map((id) => (
+                <Tag id={id} dexid={dex.id} />
+              ))}
+            </>
+          ) : null}
         </div>
         <div>
-          <LineChart dex={dex}/>
+          <LineChart dex={dex} state={small} />
         </div>
       </div>
     </div>
@@ -82,6 +96,7 @@ export const SmallBlock = ({ dex }) => {
 };
 
 export const BigBlock = ({ dex }, index) => {
+  const big = true;
   const user = useUser();
   const dexList = getSessionStorage("cachedDexList");
   const [modalOpen, setModalOpen] = useState(false);
@@ -96,7 +111,13 @@ export const BigBlock = ({ dex }, index) => {
 
   return (
     <div className="mainLayout">
-      <div className={dex.invest ? "self-center p-1 my-10 items-center justify-center bg-gradient-to-br rounded  from-dexname/80" : "self-center p-1 my-10 items-center justify-center bg-gradient-to-br rounded from-economy_tag/80"}>
+      <div
+        className={
+          dex.isInvest
+            ? "self-center p-1 my-10 items-center justify-center bg-gradient-to-br rounded  from-dexname/80"
+            : "self-center p-1 my-10 items-center justify-center bg-gradient-to-br rounded from-economy_tag/80"
+        }
+      >
         <div className="bigblock relative flex flex-col bg-white">
           <div className="py-1 flex justify-between">
             <div
@@ -106,7 +127,10 @@ export const BigBlock = ({ dex }, index) => {
               🙌
             </div>
             {user && (
-              <button className="btn btn-xs btn-ghost" onClick={() => addToWatchlist(dex.id)}>
+              <button
+                className="btn btn-xs btn-ghost"
+                onClick={() => addToWatchlist(dex, user)}
+              >
                 ❤️
               </button>
             )}
@@ -115,7 +139,7 @@ export const BigBlock = ({ dex }, index) => {
             <Link
               to={"/Bigblock/" + dex.id}
               state={{ istag: false }}
-              className="text-4sxl px-2 py-2 font-sans uppercase"
+              className="text-4xl px-2 py-2 font-sans uppercase font-semibold"
             >
               {dex.title}
             </Link>
@@ -126,14 +150,16 @@ export const BigBlock = ({ dex }, index) => {
             </div>
           </div>
           <div className="flex flex-row justify-between py-3">
-            <div className="flex flex-row">
-              <p>{dex.closing}</p>
-              <div className="h-[300px]">
-                <LineChart dex={dex}/>
-              </div>
+            <div className="h-[300px] w-[400px]">
+              <LineChart dex={dex} state={big} />
             </div>
             <div className="divider divider-horizontal"></div>
-            <div>{dex.description}</div>
+            <div className="flex flex-col w-[200px]">
+              <p className="flex text-4xl py-10 font-sans justify-center font-bold">
+                {dex.closing}
+              </p>
+              <div className="italic">{dex.description}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -145,8 +171,6 @@ export const BigBlock = ({ dex }, index) => {
     </div>
   );
 };
-
-
 
 // export const SmallBlock = ({ dex }) => {
 
@@ -263,7 +287,7 @@ export const BigBlock = ({ dex }, index) => {
 // };
 
 // export const BigBlock = ({ dex }, index) => {
-  
+
 //   const [user, setUser] = useState(null);
 //   useEffect(() => {
 //     // access_token이 있으면 유저 정보 가져옴
@@ -390,4 +414,3 @@ export const BigBlock = ({ dex }, index) => {
 //     </div>
 //   );
 // };
-

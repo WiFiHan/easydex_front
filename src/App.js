@@ -9,11 +9,9 @@ import DexListPage from "./routes/DexList";
 import BigBlockPage from "./routes/BigBlockPage";
 import SignUpPage from "./routes/SignUpPage";
 import SignInPage from "./routes/SignInPage";
-import MyPage from "./routes/MyPage";
 import { useLayoutEffect } from "react";
 
 function App() {
-  
   useLayoutEffect(() => {
     document.documentElement.setAttribute("data-theme", "light");
   }, []);
@@ -37,14 +35,11 @@ function App() {
           <Route path="/dexlist" element={<DexListPage />} />
           <Route path="/signin" element={<SignInPage />} />
 
-          <Route path="/signin" element={<SignInPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/my" element={<MyPage />} />
           <Route path="/Bigblock/:blockid" element={<BigBlockPage />} />
 
           {/* <Route path="/create" element={<PostCreatePage />} /> */}
         </Routes>
-        
+
         <Footer />
       </BrowserRouter>
     </div>

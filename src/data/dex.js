@@ -40,9 +40,14 @@ const useDexList = () => {
           setCachedDexList(cachedDexes);
         } else {
           const firstDexList = await getDexes();
-          await updateData(firstDexList);
-          const dexes = await getDexes();
-          setCachedDexList(dexes);
+
+          if (firstDexList.some((item) => item.values === null)) {
+            await updateData(firstDexList);
+            const dexes = await getDexes();
+            setCachedDexList(dexes);
+          } else {
+            setCachedDexList(firstDexList);
+          }
 
           // 최초로 받아온 dexList를 localStorage에 저장합니다.
         }

@@ -7,11 +7,11 @@ import {
   Title,
   Tooltip,
   Legend,
-} from 'chart.js';
-import { Chart } from 'chart.js';
-import { Line } from 'react-chartjs-2';
-import { watchDex,getDexes,getDexesAPI,pullDexes } from "../../apis/api";
-import dexList from '../../data/dex';
+} from "chart.js";
+import { Chart } from "chart.js";
+import { Line } from "react-chartjs-2";
+import { watchDex, getDexes, getDexesAPI, pullDexes } from "../../apis/api";
+import dexList from "../../data/dex";
 //기본 Line 차트
 //https://react-chartjs-2.js.org/examples/line-chart
 
@@ -46,11 +46,6 @@ ChartJS.register(
 // const dummyMinNum = (Math.min(...yDummnyNum)*0.99);
 // const dummyMaxNum = (Math.max(...yDummnyNum)*1.01);
 
-
-
-
-
-
 // export const options = {
 //   responsive: true,
 //   plugins: {
@@ -74,7 +69,6 @@ ChartJS.register(
 // //차트 px 단위 기본 폰트 크기 설정
 // Chart.defaults.font.size = 10;
 
-
 // export const data = {
 //   labels: xDummy,
 //   datasets: [
@@ -86,7 +80,6 @@ ChartJS.register(
 //     },
 //   ],
 // };
-
 
 //   const keys = Object.keys(ecoDummy2)
 //   const values = Object.values(ecoDummy2);
@@ -102,71 +95,77 @@ ChartJS.register(
 //   };
 // //comment out
 
-export function LineChart({dex}) {
-
-
+export function LineChart({ dex, state }) {
   const xDatas = Object.keys(dex.values).reverse();
   const values = Object.values(dex.values);
 
-  if (dex.isInvest){
-    for(var i = 0; i<values.length;i++){
-      values[i] = values[i].replace(',','')*1;
-      console.log(values);
+  if (dex.isInvest) {
+    for (var i = 0; i < values.length; i++) {
+      values[i] = values[i].replace(",", "") * 1;
     }
     Chart.defaults.font.size = 10;
-  }
-  else {
-    if(xDatas[0].length){
+  } else {
+    if (xDatas[0].length) {
       Chart.defaults.font.size = 10;
-    }
-    else if(xDatas[0].includes("Q")){
+    } else if (xDatas[0].includes("Q")) {
       Chart.defaults.font.size = 8;
-    }
-    else Chart.defaults.font.size = 8;
+    } else Chart.defaults.font.size = 8;
   }
-
 
   const yDatas = values.map(parseFloat).reverse();
-  const valueMinNum = (Math.min(...yDatas)*0.99);
-  const valueMaxNum = (Math.max(...yDatas)*1.01);
+  const valueMinNum = Math.min(...yDatas) * 0.99;
+  const valueMaxNum = Math.max(...yDatas) * 1.01;
 
   const data = {
-    labels : xDatas,
+    labels: xDatas,
     datasets: [
       {
-        label: 'dex.title', //그래프 분류되는 항목
+        label: "dex.title", //그래프 분류되는 항목
         data: yDatas, //실제 그려지는 데이터(Y축 숫자)
-        borderColor: 'rgb(255, 99, 132)', //그래프 선 color
-        backgroundColor: 'rgba(255, 99, 132, 0.5)', //마우스 호버시 나타나는 분류네모 표시 bg
+        borderColor: "rgb(255, 99, 132)", //그래프 선 color
+        backgroundColor: "rgba(255, 99, 132, 0.5)", //마우스 호버시 나타나는 분류네모 표시 bg
       },
     ],
   };
 
   const options = {
     responsive: true,
+    maintainAspectRation: false,
+    // aspectRatio : chartRatio,
     plugins: {
       legend: {
-        position: 'top',
+        position: "top",
         display: false,
       },
       title: {
         display: false,
-        text: 'Chart.js Line Chart',
+        text: "Chart.js Line Chart",
       },
     },
     scales: {
-      y:{
+      y: {
         min: valueMinNum,
         max: valueMaxNum,
-      }
+      },
     },
   };
 
-  return (
-    <div className='contentWrap'>
-      <div className='contentInner'>
-        <Line options={options} data={data} />
+  if (state) {
+    options.aspectRatio = 4 / 3;
+    return (
+      <div className="contentWrap">
+        <div className="contentInner w-[400px]">
+          <Line options={options} data={data} />
+        </div>
       </div>
-    </div>
-  );
+    );
+  } else {
+    return (
+      <div className="contentWrap">
+        <div className="contentInner w-[265px]">
+          <Line options={options} data={data} />
+        </div>
+      </div>
+    );
+  }
 }

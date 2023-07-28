@@ -14,6 +14,19 @@ export const SignUpForm = ({ formData, setFormData, handleSignUpSubmit }) => {
     <form className="form" onSubmit={handleSignUpSubmit}>
       <div className="flex items-center justify-between card h-[400px] w-[500px] bg-base-100 shadow-xl m-[30px] p-[30px]">
         <div className="flex flex-row justify-between items-center">
+          <img src={person_icon} className="h-[50px] w-[50px]" />
+
+          <input
+            required
+            type="text"
+            id="username"
+            className="input input-bordered w-[440px] ml-[10px]"
+            onChange={handleFormData}
+            placeholder="아이디를 입력해주세요"
+            value={formData.username}
+          />
+        </div>
+        <div className="flex flex-row justify-between items-center">
           <img src={email_icon} className="h-[50px] w-[50px]" />
           <input
             required
@@ -51,19 +64,6 @@ export const SignUpForm = ({ formData, setFormData, handleSignUpSubmit }) => {
             value={formData.confirm_password}
           />
         </div>
-        <div className="flex flex-row justify-between items-center">
-          <img src={person_icon} className="h-[50px] w-[50px]" />
-
-          <input
-            required
-            type="text"
-            id="username"
-            className="input input-bordered w-[440px] ml-[10px]"
-            onChange={handleFormData}
-            placeholder="이름을 입력해주세요"
-            value={formData.username}
-          />
-        </div>
 
         <button type="submit" className="btn btn-lg btn-wide mt-7 font-sans">
           회원가입
@@ -88,23 +88,27 @@ export const SignInForm = ({ formData, setFormData, handleSignInSubmit }) => {
             경제 관련 소식을 받아보세요.
           </p>
         </div>
-        <div>
+        <div className="flex flex-row justify-between items-center">
+          <img src={person_icon} className="h-[50px] w-[50px]" />
+
           <input
             required
             type="text"
             id="username"
-            className="input input-bordered w-full"
+            className="input input-bordered w-[440px] ml-[10px]"
             onChange={handleFormData}
             value={formData.username}
-            placeholder="이메일 또는 전화"
+            placeholder="ID"
           />
         </div>
-        <div>
+        <div className="flex flex-row justify-between items-center">
+          <img src={lock_icon} className="h-[50px] w-[50px]" />
+
           <input
             required
             type="password"
             id="password"
-            className="input input-bordered w-full"
+            className="input input-bordered w-[440px] ml-[10px]"
             onChange={handleFormData}
             value={formData.password}
             placeholder="비밀번호"

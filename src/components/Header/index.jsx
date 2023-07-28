@@ -16,7 +16,6 @@ const Header = () => {
     setIsUser(user);
   }, []);
 
-
   const handleLogout = () => {
     const token = getCookie("refresh_token");
     logOut(token);
@@ -52,9 +51,6 @@ const Header = () => {
               </>
             ) : (
               <>
-                <Link to="/my" className="p-3 uppercase">
-                  my page
-                </Link>
                 <Link to="/" onClick={handleLogout} className="p-3 uppercase">
                   log out
                 </Link>

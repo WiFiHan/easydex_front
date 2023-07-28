@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { SignInForm } from "../components/Form";
 import { signIn } from "../apis/api";
+import { Link } from "react-router-dom";
 
 const SignInPage = () => {
   const [formData, setFormData] = useState({
@@ -25,7 +26,9 @@ const SignInPage = () => {
       />
       <div className="flex flex-row items-center">
         <p className="font-sans">EasyDEX가 처음이세요?</p>
-        <p className="font-sans btn btn-link"> 가입하기</p>
+        <div className="font-sans btn btn-link">
+          <Link to="/signup">가입하기</Link>
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,8 @@
-import { getSessionStorage, setSessionStorage, removeCookie } from "../utils/cookie";
+import {
+  getSessionStorage,
+  setSessionStorage,
+  removeCookie,
+} from "../utils/cookie";
 import { instance, instanceWithToken } from "./axios";
 
 // Account API
@@ -32,7 +36,6 @@ export const signUp = async (data) => {
 export const getUser = async () => {
   const response = await instanceWithToken.get("/account/info/");
   if (response.status === 200) {
-    console.log("GET USER SUCCESS");
   } else {
     console.log("[ERROR] error while updating comment");
   }
@@ -90,44 +93,38 @@ function getRandom(length) {
 }
 
 function setTags(dexes) {
-  const dexNum = dexes.length;
+  // const dexNum = dexes.length;
+  // const idArray = dexes.map(item => item.id).map(Number);
   dexes.map((dex) => {
-
-    // if (typeof dex.tags === 'string') {
-    //   const jsonTags = JSON.parse(dex.tags.replace(/'/g, '"'));
-    //   const dexTags = Object.keys(jsonTags)
-    //                           .sort((a, b) => jsonTags[b] - jsonTags[a])
-    //                           .map(Number);
-    //   dex.tags = dexTags;        
-    // }
-    
-
-    // const relatedTag = dex.tags ? dex.tags : [];
-    // const randomTag = [];
-    // while (randomTag.length < 3) {
-    //   const randomNum = getRandom(dexNum);
-    //   if (!randomTag.includes(dexes[randomNum]) && !relatedTag.includes(dexes[randomNum])) {
-    //     randomTag.push(dexes[randomNum]);
-    //   }
-    // }
-    // const concatTag = [...relatedTag, ...randomTag];
-    // dex.tags = concatTag;
-
-    console.log(`before assignment, the Tag is ${dex.tags}`);
-    dex.tags = [dex.id];
-    })
+    const data =
+      typeof dex.tags === "string"
+        ? JSON.parse(dex.tags.replace(/'/g, '"'))
+        : dex.tags;
+    if (data && data.length !== 0) {
+      const relatedKeys = Object.keys(data)
+        .filter((key) => data[key] !== "random")
+        .sort((a, b) => data[b] - data[a])
+        .map(Number);
+      const randomKeys = Object.keys(data)
+        .filter((key) => data[key] === "random")
+        .map(Number);
+      const concatTags = [...relatedKeys, ...randomKeys];
+      dex.tags = concatTags;
+    } else {
+      const randomTag = [];
+      dex.tags = randomTag;
+    }
+  });
 }
 
 export const getDexes = async () => {
-  
   const response = await instance.get("/dexmanager/");
   if (response.status === 200 || response.status === 201) {
-    console.log('getDexes SUCCESS');
-    
+    console.log("getDexes SUCCESS");
+
     //이 자리에서 Tag를 다룹니다.
     setTags(response.data);
-    setSessionStorage('cachedDexList', response.data);
-
+    setSessionStorage("cachedDexList", response.data);
   } else {
     console.log("[ERROR] error while getDexes");
   }
@@ -143,15 +140,14 @@ export const pullEcoDexes = async () => {
   }
 };
 
-
 export const getDex = async (id) => {
   const response = await instance.get(`/dexmanager/${id}/`);
   return response.data;
 };
 
 export const updateDexWithTag = async (id, jsonObject) => {
-  console.log(`updateDexWithTag begins`)
-  
+  console.log(`updateDexWithTag begins`);
+
   try {
     const response = await instance.put(`/dexmanager/${id}/`);
     if (response.status === 200) {
@@ -162,8 +158,6 @@ export const updateDexWithTag = async (id, jsonObject) => {
   } catch (error) {
     console.log(error);
   }
-  
-
 };
 
 export const pullDexes = async () => {
@@ -171,9 +165,7 @@ export const pullDexes = async () => {
   if (response.status === 200 || response.status === 201) {
     console.log("pullDexes SUCCESS");
     const dexes = await getDexes();
-    await Promise.all(
-      dexes.map(async (data) => pullDexHistory(data.id))
-    );
+    await Promise.all(dexes.map(async (data) => pullDexHistory(data.id)));
     await pullEcoDexes();
   } else {
     // console.log("[ERROR] error while creating post");
@@ -181,24 +173,25 @@ export const pullDexes = async () => {
 };
 
 export const pullDexHistory = async (id) => {
-  console.log(`pullDexHistory begins`)
+  console.log(`pullDexHistory begins`);
   const response = await instance.post(`/dexmanager/${id}/`);
   if (response.status === 200 || response.status === 201) {
     // updateDexWithTag(id, jsonObject);
     //change value type here
-
   } else {
     console.log("[ERROR] error while creating post");
   }
 };
 
 export const watchDex = async (dexId) => {
-  const response = await instanceWithToken.post(`/dexmanager/${dexId}/userdex/`);
+  const response = await instanceWithToken.post(
+    `/dexmanager/${dexId}/userdex/`
+  );
   console.log(response);
 
   if (response.status === 200 || response.status === 201) {
     const user = await getUser();
-    const dexList = getSessionStorage('cachedDexList');
+    const dexList = getSessionStorage("cachedDexList");
     const dexes = await getDexes();
     // //Front에서 가공할 수 있게 data를 전처리하는 로직
     // dexes.map(function(dex) {
@@ -207,20 +200,21 @@ export const watchDex = async (dexId) => {
     //     const dexTags = Object.keys(jsonTags)
     //                             .sort((a, b) => jsonTags[b] - jsonTags[a])
     //                             .map(Number);
-    //     dex.tags = dexTags;        
+    //     dex.tags = dexTags;
     //   }});
     // 최초로 받아온 dexList를 localStorage에 저장합니다.
 
-    const watchList = dexes.filter((dex) => dex.watching_users.includes(user.id) > 0);
-    setSessionStorage('watchingDex', watchList);
-
+    const watchList = dexes.filter(
+      (dex) => dex.watching_users.includes(user.id) > 0
+    );
+    setSessionStorage("watchingDex", watchList);
   } else {
     console.log("[ERROR] error while deleting post");
   }
 };
 
 export const pullNewsArticles = async () => {
-  console.log(`getNewsArticles begins`)
+  console.log(`getNewsArticles begins`);
   const response = await instance.post(`/dexmanager/hankyung/`);
   if (response.status === 200 || response.status === 201) {
     console.log(response.data);
@@ -230,7 +224,7 @@ export const pullNewsArticles = async () => {
 };
 
 export const getNewsSummaries = async () => {
-  console.log(`getNewsArticles begins`)
+  console.log(`getNewsArticles begins`);
   const response = await instance.get(`/dexmanager/hankyung/`);
   if (response.status === 200 || response.status === 201) {
     console.log("getNewsArticles SUCCESS");

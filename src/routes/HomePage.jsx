@@ -17,6 +17,8 @@ const HomePage = () => {
   const dexList = useDexList();
   const [user, setUser] = useState(null);
   const [isUser, setIsUser] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [searchDexes, setSearchDexes] = useState([]);
 
   useEffect(() => {
     // access_token이 있으면 유저 정보 가져옴
@@ -52,8 +54,23 @@ const HomePage = () => {
 
   // }, []);
 
-  const handleChange = (e) => {};
   //className="grid grid-cols-4 px-10 mt-10"
+
+  //set input onChange={handleChange}
+  const handleChange = (e) => {
+    const { value } = e.target;
+
+    setSearchKeyword(value);
+  };
+  //set button onClick={onClickButton}
+  const onClickButton = (e) => {
+    console.log(searchKeyword);
+    const newDexes =
+      searchKeyword === "" || searchKeyword === " "
+        ? []
+        : dexList.filter((dex) => dex.title.includes(searchKeyword));
+    setSearchDexes(newDexes);
+  };
 
   return (
     <div>
@@ -70,34 +87,67 @@ const HomePage = () => {
               <input
                 className="input main-input input-bordered join-item"
                 placeholder="관심 있는 키워드를 입력하세요!"
+                onChange={handleChange}
               />
             </div>
           </div>
-          <select className="select select-bordered join-item">
-            <option disabled selected>
-              Category
-            </option>
-            <option>Sci-fi</option>
-            <option>Drama</option>
-            <option>Action</option>
-          </select>
           <div className="indicator">
-            <button className="btn join-item">Search</button>
+            <button className="btn join-item" onClick={onClickButton}>
+              Search
+            </button>
           </div>
         </div>
-        <div>
-          <Link to="/dexlist/">전체 지표 목록 보기</Link>
-          <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
+        <div className="flex flex-col justify-center">
+          <div class="flex justify-center items-center m-5">
             {dexList.length === 0 ? (
               // dexList 배열의 길이가 0인 경우 로딩 화면 표시
-              <p>Loading...</p>
-            ) : // dexList 배열의 길이가 1 이상이고 watchList가 null이 아닐 때만 watchList를 렌더링
-            !watchList ? (
-              <p>No WatchList Yet...</p>
+
+              <div>
+                <span className="loading loading-dots loading-lg"></span>
+                <p className="font-sans">Data Loading</p>
+              </div>
+            ) : //search가 될때? 검색된 결과 : watchList
+            // dexList 배열의 길이가 1 이상이고 watchList가 null이 아닐 때만 watchList를 렌더링
+
+            searchDexes.length === 0 ? (
+              (console.log(searchDexes.length),
+              !watchList || watchList.length === 0 ? (
+                <div>
+                  <div className="hero mt-5">
+                    <div className="hero-content text-center">
+                      <div className="max-w-lg">
+                        <h1 className="text-5xl font-bold font-sans">
+                          관심 종목이 비어있어요!
+                        </h1>
+                        <p className="py-6">
+                          EasyDEX 에서는 관심 종목을 등록하고,
+                          <br />
+                          관심 종목의 지표를 한 눈에 확인할 수 있어요.
+                          <br />
+                          전체 지표를 보러 가볼까요?
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
+                  {watchList.map((dex) => (
+                    <SmallBlock dex={dex} />
+                  ))}
+                </div>
+              ))
             ) : (
-              watchList.map((dex) => <SmallBlock dex={dex} />)
+              <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
+                {searchDexes.map((dex) => (
+                  <SmallBlock dex={dex} />
+                ))}
+              </div>
             )}
-          </div>{" "}
+          </div>
+          <div className="btn btn-xl mb-10 btn-outline">
+            <Link to="/dexlist/">전체 지표 목록 보기</Link>
+          </div>
         </div>
       </div>
     </div>
