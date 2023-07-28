@@ -85,15 +85,64 @@ export const logOut = async (token) => {
   }
 };
 
+function getRandom(length) {
+  return Math.floor(Math.random() * length);
+}
+
+function setTags(dexes) {
+  const dexNum = dexes.length;
+  dexes.map((dex) => {
+
+    // if (typeof dex.tags === 'string') {
+    //   const jsonTags = JSON.parse(dex.tags.replace(/'/g, '"'));
+    //   const dexTags = Object.keys(jsonTags)
+    //                           .sort((a, b) => jsonTags[b] - jsonTags[a])
+    //                           .map(Number);
+    //   dex.tags = dexTags;        
+    // }
+    
+
+    // const relatedTag = dex.tags ? dex.tags : [];
+    // const randomTag = [];
+    // while (randomTag.length < 3) {
+    //   const randomNum = getRandom(dexNum);
+    //   if (!randomTag.includes(dexes[randomNum]) && !relatedTag.includes(dexes[randomNum])) {
+    //     randomTag.push(dexes[randomNum]);
+    //   }
+    // }
+    // const concatTag = [...relatedTag, ...randomTag];
+    // dex.tags = concatTag;
+
+    console.log(`before assignment, the Tag is ${dex.tags}`);
+    dex.tags = [dex.id];
+    })
+}
+
 export const getDexes = async () => {
   
   const response = await instance.get("/dexmanager/");
   if (response.status === 200 || response.status === 201) {
+    console.log('getDexes SUCCESS');
+    
+    //이 자리에서 Tag를 다룹니다.
+    setTags(response.data);
+    setSessionStorage('cachedDexList', response.data);
+
   } else {
     console.log("[ERROR] error while getDexes");
   }
   return response.data;
 };
+
+export const pullEcoDexes = async () => {
+  const response = await instance.post("/dexmanager/economy/");
+  if (response.status === 200 || response.status === 201) {
+    // console.log("POST SUCCESS");
+  } else {
+    // console.log("[ERROR] error while creating post");
+  }
+};
+
 
 export const getDex = async (id) => {
   const response = await instance.get(`/dexmanager/${id}/`);
@@ -102,30 +151,36 @@ export const getDex = async (id) => {
 
 export const updateDexWithTag = async (id, jsonObject) => {
   console.log(`updateDexWithTag begins`)
-  const response = await instance.put(`/dexmanager/${id}/`, jsonObject);
-  const data = response.data;
-  if (response.status === 200) {
-    console.log("TAG UPDATE SUCCESS");
-    // if (typeof  data.tags === 'string') {
-    //   const dexTags = Object.keys(JSON.parse(data.tags.replace(/'/g, '"'))).map(Number);
-    //   response.data.tags = dexTags;
-    //   console.log(response.data);
-    // }
-  } else {
-    console.log("[ERROR] error while updating tag");
+  
+  try {
+    const response = await instance.put(`/dexmanager/${id}/`);
+    if (response.status === 200) {
+      console.log("TAG UPDATE SUCCESS");
+    } else {
+      console.log("[ERROR] error while updating tag");
+    }
+  } catch (error) {
+    console.log(error);
   }
+  
+
 };
 
 export const pullDexes = async () => {
   const response = await instance.post("/dexmanager/");
   if (response.status === 200 || response.status === 201) {
-    // console.log("POST SUCCESS");
+    console.log("pullDexes SUCCESS");
+    const dexes = await getDexes();
+    await Promise.all(
+      dexes.map(async (data) => pullDexHistory(data.id))
+    );
+    await pullEcoDexes();
   } else {
     // console.log("[ERROR] error while creating post");
   }
 };
 
-export const pullDexHistory = async (id, jsonObject) => {
+export const pullDexHistory = async (id) => {
   console.log(`pullDexHistory begins`)
   const response = await instance.post(`/dexmanager/${id}/`);
   if (response.status === 200 || response.status === 201) {
@@ -144,36 +199,43 @@ export const watchDex = async (dexId) => {
   if (response.status === 200 || response.status === 201) {
     const user = await getUser();
     const dexList = getSessionStorage('cachedDexList');
-    // console.log(dexList);
-    // const updateDex = await getDex(dexId);
-    // dexList.forEach(dexItem => {
-    //   if (dexItem.id === dexId) {
-    //     console.log(`before assignment: ${dexItem.watching_users}`);
-    //     dexItem.watching_users = updateDex.watching_users;
-    //     console.log(`after assignment: ${dexItem.watching_users}`);
-    //   }
-    // });
-    // console.log(dexList);
-
     const dexes = await getDexes();
-    //Front에서 가공할 수 있게 data를 전처리하는 로직
-    dexes.map(function(dex) {
-      if (typeof dex.tags === 'string') {
-        const jsonTags = JSON.parse(dex.tags.replace(/'/g, '"'));
-        const dexTags = Object.keys(jsonTags)
-                                .sort((a, b) => jsonTags[b] - jsonTags[a])
-                                .map(Number);
-        dex.tags = dexTags;        
-      }});
+    // //Front에서 가공할 수 있게 data를 전처리하는 로직
+    // dexes.map(function(dex) {
+    //   if (typeof dex.tags === 'string') {
+    //     const jsonTags = JSON.parse(dex.tags.replace(/'/g, '"'));
+    //     const dexTags = Object.keys(jsonTags)
+    //                             .sort((a, b) => jsonTags[b] - jsonTags[a])
+    //                             .map(Number);
+    //     dex.tags = dexTags;        
+    //   }});
     // 최초로 받아온 dexList를 localStorage에 저장합니다.
 
     const watchList = dexes.filter((dex) => dex.watching_users.includes(user.id) > 0);
-    console.log(watchList);
-
-    setSessionStorage('cachedDexList', dexes);
     setSessionStorage('watchingDex', watchList);
 
   } else {
     console.log("[ERROR] error while deleting post");
   }
+};
+
+export const pullNewsArticles = async () => {
+  console.log(`getNewsArticles begins`)
+  const response = await instance.post(`/dexmanager/hankyung/`);
+  if (response.status === 200 || response.status === 201) {
+    console.log(response.data);
+  } else {
+    console.log("[ERROR] error while creating post");
+  }
+};
+
+export const getNewsSummaries = async () => {
+  console.log(`getNewsArticles begins`)
+  const response = await instance.get(`/dexmanager/hankyung/`);
+  if (response.status === 200 || response.status === 201) {
+    console.log("getNewsArticles SUCCESS");
+  } else {
+    console.log("[ERROR] error while getting NewsSummaries");
+  }
+  return response.data;
 };

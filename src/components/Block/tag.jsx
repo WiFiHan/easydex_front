@@ -12,7 +12,7 @@ export const Tag = ({ id }, { dexid }) => {
   const dexList = getSessionStorage("cachedDexList");
 
   const tagid = id;
-  const dex = dexList[id];
+  const dex = dexList.filter((item) => item.id === id)[0];
 
   return (
     dex && (
