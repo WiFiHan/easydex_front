@@ -63,13 +63,60 @@ const HomePage = () => {
     setSearchKeyword(value);
   };
   //set button onClick={onClickButton}
+  // const [newDexes, setNewDexes] = useState([]);
+  // const onClickButton = (e) => {
+  //   console.log(searchKeyword);
+
+  //   if (!(searchKeyword === "" || searchKeyword === " ")) {
+  //     for (var i = 0; i < dexList.length; i++) {
+  //       if (dexList[i]) {
+  //         if (dexList[i].title.includes(searchKeyword)) {
+  //           newDexes.push(dexList[i]);
+  //           break;
+  //         } else {
+  //           for (var j = 0; j < 5; j++) {
+  //             if (dexList[i].search_keyword[j]) {
+  //               if (dexList[i].search_keyword[j].includes(searchKeyword)) {
+  //                 setNewDexes(dexList[i]);
+  //                 break;
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  //   // const newDexes =
+  //   //   searchKeyword === "" || searchKeyword === " "
+  //   //     ? []
+  //   //     : dexList.filter((dex) => dex.title.includes(searchKeyword));
+  //   setSearchDexes(newDexes);
+  //   // console.log(searchDexes);
+  //   console.log(newDexes);
+  // };
+
+  const [newDexes, setNewDexes] = useState([]);
   const onClickButton = (e) => {
     console.log(searchKeyword);
-    const newDexes =
-      searchKeyword === "" || searchKeyword === " "
-        ? []
-        : dexList.filter((dex) => dex.title.includes(searchKeyword));
-    setSearchDexes(newDexes);
+
+    let updatedDexes = []; // 일시적인 변수를 만들어서 여기에 결과를 저장하게 합니다.
+    if (!(searchKeyword === "" || searchKeyword === " ")) {
+      for (var i = 0; i < dexList.length; i++) {
+        if (dexList[i]) {
+          if (
+            dexList[i].title.includes(searchKeyword) ||
+            dexList[i].search_keyword.some((keyword) =>
+              keyword.includes(searchKeyword)
+            )
+          ) {
+            updatedDexes.push(dexList[i]); // 결과를 일시적인 변수에 추가합니다.
+          }
+        }
+      }
+    }
+    setNewDexes(updatedDexes); // 상태를 한번에 업데이트 합니다.
+    setSearchDexes(updatedDexes); // 필요에 따라 searchDexes도 업데이트 합니다.
+    console.log(updatedDexes);
   };
 
   //For Getting News Summaries
@@ -82,6 +129,7 @@ const HomePage = () => {
     };
     getNewsSummariesAPI();
   }, []);
+
   const jbSplit = summaries.split(/\r?\n/);
   const summaryTitles = [
     jbSplit[0],
@@ -106,12 +154,26 @@ const HomePage = () => {
     }
   }
 
+  const [activeDropdown, setActiveDropdown] = useState(null); // Here is a new state variable for tracking the active dropdown
+
+  const handleDropdownClick = (index) => {
+    if (activeDropdown === index) {
+      setActiveDropdown(null); // If the clicked dropdown is already active, close it
+    } else {
+      setActiveDropdown(index); // Otherwise, make it the active one
+    }
+  };
+
   const Summaries = () => {
     var summaryArray = [];
     for (var i = 0; i < 5; i++) {
       if (summaryTitles[i] && summaryTexts[i]) {
         summaryArray.push(
-          <details className="dropdown mb-32">
+          <details
+            className="dropdown mb-32"
+            open={activeDropdown === i} // Open prop is controlled by whether this is the active dropdown
+            onClick={() => handleDropdownClick(i)} // When this dropdown is clicked, call the handler
+          >
             <summary className="m-1 btn">{summaryTitles[i]}</summary>
             <ul className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
               <li>
