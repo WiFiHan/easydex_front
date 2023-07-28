@@ -72,6 +72,59 @@ const HomePage = () => {
     setSearchDexes(newDexes);
   };
 
+  //For Getting News Summaries
+  const [summaries, setSummaries] = useState("");
+  useEffect(() => {
+    // access_token이 있으면 유저 정보 가져옴
+    const getNewsSummariesAPI = async () => {
+      const newsArticles = await getNewsSummaries();
+      setSummaries(newsArticles.summaries);
+    };
+    getNewsSummariesAPI();
+  }, []);
+  const jbSplit = summaries.split(/\r?\n/);
+  const summaryTitles = [
+    jbSplit[0],
+    jbSplit[3],
+    jbSplit[6],
+    jbSplit[9],
+    jbSplit[12],
+  ];
+  const summaryTexts = [
+    jbSplit[1],
+    jbSplit[4],
+    jbSplit[7],
+    jbSplit[10],
+    jbSplit[13],
+  ];
+
+  for (var i = 0; i < 5; i++) {
+    if (summaryTitles[i] && summaryTexts[i]) {
+      console.log(typeof summaryTexts[i]);
+      summaryTitles[i] = summaryTitles[i].substring(3);
+      summaryTexts[i] = summaryTexts[i].substring(2);
+    }
+  }
+
+  const Summaries = () => {
+    var summaryArray = [];
+    for (var i = 0; i < 5; i++) {
+      if (summaryTitles[i] && summaryTexts[i]) {
+        summaryArray.push(
+          <details className="dropdown mb-32">
+            <summary className="m-1 btn">{summaryTitles[i]}</summary>
+            <ul className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
+              <li>
+                <a style={{ wordWrap: "break-word" }}>{summaryTexts[i]}</a>
+              </li>
+            </ul>
+          </details>
+        );
+      }
+    }
+    return summaryArray;
+  };
+
   return (
     <div>
       <div className="mainLayout">
@@ -97,6 +150,8 @@ const HomePage = () => {
             </button>
           </div>
         </div>
+        <div className="flex flex-row mt-5">{Summaries()}</div>
+
         <div className="flex flex-col justify-center">
           <div class="flex justify-center items-center m-5">
             {dexList.length === 0 ? (
