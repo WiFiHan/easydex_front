@@ -13,25 +13,20 @@ const useDexList = () => {
       if (!firstDexList || firstDexList.length === 0) {
         await pullDexes();
         const secondDexList = await getDexes();
-        if (secondDexList.some((dex) => dex.tags === null)) {
+
+        if (!secondDexList.some((dex) => dex.values === null)) {
+          const tagUpdateList = secondDexList.filter(item => item.values !== null && item.isInvest);
           const jsonObject = {
-            indices: secondDexList.map(item => String(item.id))
+            indices: tagUpdateList
+              .map(item => String(item.id))
           };
-    
-          // Pull all dex history first
           await Promise.all(
-            secondDexList.map(async function (data) {
-              await pullDexHistory(data.id, jsonObject);
-              console.log(`${data.id} values is ${data.values}`);
-            })
-          );
-          
-
-
-          // Now update all dex with tags
-          await Promise.all(
-            secondDexList.map(async function (data) {
-              await updateDexWithTag(data.id, jsonObject);
+            tagUpdateList.map(async function (data) {
+              try {
+                updateDexWithTag(data.id, jsonObject);
+              } catch (error) {
+                //randomTag 할당
+              }
             })
           );
         }
@@ -42,31 +37,22 @@ const useDexList = () => {
       try {
         // 최초 접속 시에는 localStorage에서 dexList를 불러옵니다.
         const cachedDexes = getSessionStorage('cachedDexList');
-        if (cachedDexes) {
+        if (cachedDexes && cachedDexes.length != 0) {
           setCachedDexList(cachedDexes);
         } else {
           const firstDexList = await getDexes();
           await updateData(firstDexList);
           const dexes = await getDexes();
-
-          //Front에서 가공할 수 있게 data를 전처리하는 로직
-          dexes.map(function(dex) {
-            if (typeof dex.tags === 'string') {
-              const jsonTags = JSON.parse(dex.tags.replace(/'/g, '"'));
-              const dexTags = Object.keys(jsonTags)
-                                      .sort((a, b) => jsonTags[b] - jsonTags[a])
-                                      .map(Number);
-              dex.tags = dexTags;        
-            }});
-
           setCachedDexList(dexes);
+          
           // 최초로 받아온 dexList를 localStorage에 저장합니다.
-          setSessionStorage('cachedDexList', dexes);
         }
       } catch (error) {
         console.error('지표 데이터를 가져오는 도중 오류가 발생했습니다:', error);
       }
     };
+
+
 
     fetchData();
   }, []);
@@ -75,3 +61,5 @@ const useDexList = () => {
 };
 
 export default useDexList;
+
+

@@ -4,25 +4,45 @@ import useDexList from "../data/dex";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { BigBlock, SmallBlock } from "../components/Block";
-import { getDexes, pullDexes, getUser } from "../apis/api";
-import {
-  getCookie,
-  getSessionStorage,
-  setSessionStorage,
-} from "../utils/cookie";
+import { getNewsSummaries, getUser } from "../apis/api";
+import {getCookie,getSessionStorage,setSessionStorage} from "../utils/cookie";
 import EasyDEXlogo from "../assets/images/EasyDEX_logo.png";
 
 const HomePage = () => {
   //최초 전체 dexList를 호출
   const dexList = useDexList();
-  const watchList = getSessionStorage("watchingDex");
-  console.log(watchList);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // access_token이 있으면 유저 정보 가져옴
+    if (getCookie("access_token")) {
+      const getUserAPI = async () => {
+        const user = await getUser();
+        setUser(user);
+      };
+      getUserAPI();
+    }
+  }, []);
+  
+  const initWatchList = user ? getSessionStorage("watchingDex") : [];
+  const watchList = initWatchList ? initWatchList : dexList.filter((dex) => dex.watching_users.includes(user.id) > 0);
 
   const [customDex, setCustomDex] = useState(false);
   const handleCustom = () => {
     customDex ? setCustomDex(false) : setCustomDex(true);
   };
   useEffect(() => {}, [customDex]);
+
+  // //For Getting News Summaries
+  // useEffect(() => {
+  //   // access_token이 있으면 유저 정보 가져옴
+  //   const getNewsSummariesAPI = async () => {
+  //     const newsArticles = await getNewsSummaries();
+  //     console.log(newsArticles);
+  //   };
+  //   getNewsSummariesAPI();
+
+  // }, []);
 
   const handleChange = (e) => {};
   //className="grid grid-cols-4 px-10 mt-10"
@@ -67,7 +87,7 @@ const HomePage = () => {
             !watchList ? (
               <p>No WatchList Yet...</p>
             ) : (
-              watchList.map((dex) => <SmallBlock dex={dex} />)
+              watchList.map((dex) => <SmallBlock dex={dex}/>)
             )}
           </div>{" "}
         </div>

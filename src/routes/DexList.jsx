@@ -10,13 +10,15 @@ import { watchDex, getUser, getDex, getDexes } from "../apis/api";
 const DexListPage = () => {
   // const dexList = useDexList();
   // const { dexList, watchDexList } = useDexList();
-  const [dexList, setDexList] = useState(getSessionStorage('cachedDexList'));
+  const dexList = getSessionStorage('cachedDexList');
   const [isEdit, setIsEdit] = useState(false);
   const [isUser, setIsUser] = useState("");
   useEffect(() => {
     const user = getCookie("access_token") ? true : false;
     setIsUser(user);
   }, []);
+
+  console.log(dexList)
 
   const handleChange = (e) => {};
 
@@ -44,26 +46,8 @@ const DexListPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {/* <tr class="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600">
-                    <td class="whitespace-nowrap px-6 py-4 font-medium">1</td> 
-                    <td class="whitespace-nowrap px-6 py-4">Mark</td>
-                    <td class="whitespace-nowrap px-6 py-4">Otto</td>
-                    <td class="whitespace-nowrap px-6 py-4">@mdo</td>
-                  </tr>
-                  <tr class="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600">
-                    <td class="whitespace-nowrap px-6 py-4 font-medium">2</td>
-                    <td class="whitespace-nowrap px-6 py-4">Jacob</td>
-                    <td class="whitespace-nowrap px-6 py-4">Thornton</td>
-                    <td class="whitespace-nowrap px-6 py-4">@fat</td>
-                  </tr>
-                  <tr class="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600">
-                    <td class="whitespace-nowrap px-6 py-4 font-medium">3</td>
-                    <td class="whitespace-nowrap px-6 py-4">Larry</td>
-                    <td class="whitespace-nowrap px-6 py-4">Wild</td>
-                    <td class="whitespace-nowrap px-6 py-4">@twitter</td>
-                  </tr> */}
                   {dexList.map((dex)=>(
-                    <DexInfo dex={dex} dexList={dexList} isUser={isUser}/>
+                    <DexInfo dex={dex} isUser={isUser}/>
                   ))}
                 </tbody>
               </table>
@@ -77,9 +61,11 @@ const DexListPage = () => {
 
 export default DexListPage;
 
-const DexInfo = ({dex, dexList, isUser}) =>{
+const DexInfo = ({dex, isUser}) =>{
 // 순서  1. id, 2. title, 3. closing, 4. tags
 // 3번째 td에 5000을 추후 dex.closing으로 수정
+
+console.log(dex);
 
 const onClickWatch = async () => {
   watchDex(dex.id);
