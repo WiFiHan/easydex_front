@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, uselocation } from "react";
 import { DexBlock } from "../components/DexBlock";
 import useDexList from "../data/dex";
 import { Link } from "react-router-dom";
@@ -154,33 +154,34 @@ const HomePage = () => {
     }
   }
 
-  const [activeDropdown, setActiveDropdown] = useState(null); // Here is a new state variable for tracking the active dropdown
+  const [summaryOpen, setSummaryOpen] = useState("");
 
-  const handleDropdownClick = (index) => {
-    if (activeDropdown === index) {
-      setActiveDropdown(null); // If the clicked dropdown is already active, close it
+  const summaryCheck = (index) => {
+    console.log(index);
+    console.log(summaryOpen);
+    if (summaryOpen === index) {
+      setSummaryOpen("");
     } else {
-      setActiveDropdown(index); // Otherwise, make it the active one
+      setSummaryOpen(index);
     }
   };
 
   const Summaries = () => {
-    var summaryArray = [];
-    for (var i = 0; i < 5; i++) {
+    const summaryArray = [];
+    for (let i = 0; i < 5; i++) {
+      // 'var' 대신 'let' 사용
       if (summaryTitles[i] && summaryTexts[i]) {
         summaryArray.push(
-          <details
-            className="dropdown mb-32"
-            open={activeDropdown === i} // Open prop is controlled by whether this is the active dropdown
-            onClick={() => handleDropdownClick(i)} // When this dropdown is clicked, call the handler
-          >
-            <summary className="m-1 btn">{summaryTitles[i]}</summary>
-            <ul className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
-              <li>
-                <a style={{ wordWrap: "break-word" }}>{summaryTexts[i]}</a>
-              </li>
-            </ul>
-          </details>
+          <div key={i}>
+            <button // 'btn' 대신 'button' 사용
+              className="btn mx-2"
+              onClick={() => {
+                summaryCheck(i);
+              }}
+            >
+              {summaryTitles[i]}
+            </button>
+          </div>
         );
       }
     }
@@ -212,7 +213,22 @@ const HomePage = () => {
             </button>
           </div>
         </div>
+        <div>
+          <p className="text-center font-bold text-s font-sans mt-2 text-gray-400">
+            최신 경제 트렌드를 5개의 키워드로 확인하세요!<br></br>
+            키워드를 클릭하면 해당 키워드에 대한 뉴스 요약을 확인할 수 있습니다.
+          </p>
+        </div>
         <div className="flex flex-row mt-5">{Summaries()}</div>
+        <div>
+          {summaryOpen === "" ? null : (
+            <>
+              <div className="text-m font-bold font-sans grid h-10 w-100 card bg-base-200 rounded-box place-items-center justify-center px-10 my-3">
+                {summaryTexts[summaryOpen]}
+              </div>
+            </>
+          )}
+        </div>
 
         <div className="flex flex-col justify-center">
           <div class="flex justify-center items-center m-5">
@@ -250,20 +266,22 @@ const HomePage = () => {
               ) : (
                 <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
                   {watchList.map((dex) => (
-                    <SmallBlock dex={dex} />
+                    <SmallBlock dex={dex} user={user} />
                   ))}
                 </div>
               ))
             ) : (
               <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
                 {searchDexes.map((dex) => (
-                  <SmallBlock dex={dex} />
+                  <SmallBlock dex={dex} user={user} />
                 ))}
               </div>
             )}
           </div>
           <div className="btn btn-xl mb-10 btn-outline">
-            <Link to="/dexlist/">전체 지표 목록 보기</Link>
+            <Link to="/dexlist/" state={{ user: user }}>
+              전체 지표 목록 보기
+            </Link>
           </div>
         </div>
       </div>

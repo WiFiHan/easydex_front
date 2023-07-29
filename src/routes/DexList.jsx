@@ -95,18 +95,18 @@ const DexInfo = ({ dex, user }) => {
               (isWatched ? (
                 <img
                   src={redheart}
-                  className="w-[15px]"
+                  className="w-[15px] mr-1"
                   onClick={() => addToWatchlist(dex, user)}
                 />
               ) : (
                 <img
                   src={blackheart}
-                  className="w-[15px]"
+                  className="w-[15px] mr-1"
                   onClick={() => addToWatchlist(dex, user)}
                 />
               ))}
             <Link to={"/Bigblock/" + dex.id} state={{ istag: false }}>
-              {dex.title}
+              {dex.reduced_title}
             </Link>
           </div>
         </td>

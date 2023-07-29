@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import useDexList from "../../data/dex";
 import { Tag } from "./tag";
-import { useState, useEffect } from "react";
+import { useState, useEffect, uselocation } from "react";
 import {
   watchDex,
   getDexes,
@@ -40,10 +40,11 @@ const addToWatchlist = async (dex, user) => {
   console.log(isWatched);
 };
 
-export const SmallBlock = ({ dex }) => {
+export const SmallBlock = ({ dex, user }) => {
   const small = false;
-  const user = useUser();
+  // const user = useUser();
   const smallDexTags = dex.tags.slice(0, 2);
+  console.log(user);
 
   return (
     <div className="card w-[300px] h-[300px]  p-1 m-10  items-center justify-center bg-gradient-to-br rounded">
@@ -69,7 +70,7 @@ export const SmallBlock = ({ dex }) => {
             <div className="flex flex-col justify-between">
               <Link
                 to={"/Bigblock/" + dex.id}
-                state={{ istag: false }}
+                state={{ istag: false, user: user }}
                 className="btn btn-lg btn-ghost"
               >
                 {dex.reduced_title}
@@ -95,9 +96,9 @@ export const SmallBlock = ({ dex }) => {
   );
 };
 
-export const BigBlock = ({ dex }, index) => {
+export const BigBlock = ({ dex, user }, index) => {
   const big = true;
-  const user = useUser();
+  // const user = useUser();
   const dexList = getSessionStorage("cachedDexList");
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -138,7 +139,7 @@ export const BigBlock = ({ dex }, index) => {
           <div className="flex flex-col justify-between ">
             <Link
               to={"/Bigblock/" + dex.id}
-              state={{ istag: false }}
+              state={{ istag: false, user: user }}
               className="text-4xl px-2 py-2 font-sans uppercase font-semibold"
             >
               {dex.title}
@@ -165,7 +166,7 @@ export const BigBlock = ({ dex }, index) => {
       </div>
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
         {tagDexarr.map((dex) => (
-          <SmallBlock dex={dex} />
+          <SmallBlock dex={dex} user={user} />
         ))}
       </div>
     </div>
