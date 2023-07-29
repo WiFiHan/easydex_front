@@ -52,7 +52,7 @@ export const SmallBlock = ({ dex, user }) => {
         <div className="px-2 py-1 flex justify-between">
           <div
             className="tooltip"
-            data-tip="흰색 block은 투자지표이고 갈색 block은 경제지표입니다"
+            data-tip="block의 배경색이 흰색이면 투자지표이고 갈색이면 경제지표입니다"
           >
             🙌
           </div>
@@ -101,6 +101,7 @@ export const BigBlock = ({ dex, user }, index) => {
   // const user = useUser();
   const dexList = getSessionStorage("cachedDexList");
   const [modalOpen, setModalOpen] = useState(false);
+  const dexTags = dex.tags.slice(0, 6);
 
   var tagDexarr = [];
 
@@ -123,7 +124,7 @@ export const BigBlock = ({ dex, user }, index) => {
           <div className="py-1 flex justify-between">
             <div
               className="tooltip"
-              data-tip="흰색 block은 투자지표이고 갈색 block은 경제지표입니다"
+              data-tip="block의 배경색이 흰색이면 투자지표이고 갈색이면 경제지표입니다"
             >
               🙌
             </div>
@@ -145,7 +146,7 @@ export const BigBlock = ({ dex, user }, index) => {
               {dex.title}
             </Link>
             <div className="flex flex-row">
-              {dex.tags.map((id) => (
+              {dexTags.map((id) => (
                 <Tag id={id} dexid={dex.id} />
               ))}
             </div>

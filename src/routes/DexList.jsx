@@ -3,7 +3,7 @@ import { DexBlock } from "../components/DexBlock";
 import useDexList from "../data/dex";
 import { BigBlock, SmallBlock } from "../components/Block/index";
 import { Tag } from "../components/Block/tag";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   getSessionStorage,
   getCookie,
@@ -16,6 +16,7 @@ import redheart from "../../src/assets/images/red-heart.png";
 const DexListPage = () => {
   // const dexList = useDexList();
   // const { dexList, watchDexList } = useDexList();
+  // const user = useLocation().state.user;
   const dexList = getSessionStorage("cachedDexList");
   const [isEdit, setIsEdit] = useState(false);
   const [user, setUser] = useState(null);
@@ -33,39 +34,41 @@ const DexListPage = () => {
   const handleChange = (e) => {};
 
   return (
-    <div>
-      <div class="flex flex-col dexlist-layout">
-        <div class="overflow-x-auto sm:-mx-6 lg:-mx-8 dexlist">
-          <div class="inline-block min-w-full py-2 sm:px-6 lg:px-8">
-            <div class="overflow-hidden">
-              <table class="min-w-full text-left text-sm font-light">
-                <thead class="border-b font-medium dark:border-neutral-500">
-                  <tr>
-                    <th scope="col" class="px-6 py-4">
-                      #
-                    </th>
-                    <th scope="col" class="px-6 py-4">
-                      Title
-                    </th>
-                    <th scope="col" class="px-6 py-4 text-right">
-                      Value
-                    </th>
-                    <th scope="col" class="px-6 py-4">
-                      Tags
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dexList.map((dex) => (
-                    <DexInfo dex={dex} user={user} />
-                  ))}
-                </tbody>
-              </table>
+    user && (
+      <div>
+        <div class="flex flex-col dexlist-layout">
+          <div class="overflow-x-auto sm:-mx-6 lg:-mx-8 dexlist">
+            <div class="inline-block min-w-full py-2 sm:px-6 lg:px-8">
+              <div class="overflow-hidden">
+                <table class="min-w-full text-left text-sm font-light">
+                  <thead class="border-b font-medium dark:border-neutral-500">
+                    <tr>
+                      <th scope="col" class="px-6 py-4">
+                        #
+                      </th>
+                      <th scope="col" class="px-6 py-4">
+                        Title
+                      </th>
+                      <th scope="col" class="px-6 py-4 text-right">
+                        Value
+                      </th>
+                      <th scope="col" class="px-6 py-4">
+                        Tags
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dexList.map((dex) => (
+                      <DexInfo dex={dex} user={user} />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    )
   );
 };
 
@@ -75,7 +78,10 @@ const DexInfo = ({ dex, user }) => {
   // 순서  1. id, 2. title, 3. closing, 4. tags
   // 3번째 td에 5000을 추후 dex.closing으로 수정
   console.log(user);
-  const [isWatched, setIsWatched] = useState(false);
+
+  const [isWatched, setIsWatched] = useState(
+    user ? dex.watching_users.includes(user.id) > 0 : false
+  );
 
   const addToWatchlist = async (dex, user) => {
     console.log("addToWatchlist");
